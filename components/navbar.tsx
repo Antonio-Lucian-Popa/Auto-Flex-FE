@@ -15,6 +15,8 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { logout } from "@/lib/api"
 
+import Image from "next/image"
+
 export function Navbar() {
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
@@ -36,8 +38,16 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="mx-auto max-w-[1440px] flex h-16 items-center px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center space-x-2">
-          <Car className="h-6 w-6" />
+        <div className="flex items-center gap-2">
+          <Image
+            src="/logo.png" // 🟢 imaginea din public/
+            alt="AutoFlex Logo"
+            width={40}
+            height={40}
+            className="rounded-md object-contain"
+          />
           <span className="text-xl font-bold">AutoFlex</span>
+        </div>
         </Link>
 
         {/* Desktop Navigation */}
