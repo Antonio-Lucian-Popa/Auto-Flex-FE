@@ -1,0 +1,181 @@
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
+import { useToast } from "@/components/ui/use-toast"
+import { register } from "@/lib/api"
+import { Car } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+
+export default function RegisterPage() {
+  const router = useRouter()
+  const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    userType: "CLIENT" as "CLIENT" | "OWNER",
+  })
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Eroare",
+        description: "Parolele nu coincid",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      await register({
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        userType: formData.userType,
+      })
+      toast({
+        title: "Cont creat cu succes",
+        description: "Te poți autentifica acum",
+      })
+      router.push("/auth/login")
+    } catch (error: any) {
+      toast({
+        title: "Eroare",
+        description: error.response?.data?.message || "A apărut o eroare la înregistrare",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  return (
+    <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] py-8">
+      <Card className="w-full max-w-md p-8">
+        <div className="flex flex-col items-center space-y-2 mb-8">
+          <Car className="h-12 w-12" />
+          <h1 className="text-2xl font-bold text-center">Creează cont nou</h1>
+          <p className="text-muted-foreground text-center">
+            Înregistrează-te pentru a începe să folosești AutoFlex
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="firstName">Prenume</Label>
+              <Input
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                required
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Nume</Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">Parolă</Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirmă parola</Label>
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Tip cont</Label>
+            <Select
+              value={formData.userType}
+              onValueChange={(value: "CLIENT" | "OWNER") =>
+                setFormData((prev) => ({ ...prev, userType: value }))
+              }
+              disabled={isLoading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Alege tipul de cont" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="CLIENT">Client</SelectItem>
+                <SelectItem value="OWNER">Proprietar</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Se procesează..." : "Înregistrare"}
+          </Button>
+        </form>
+
+        <Separator className="my-8" />
+
+        <p className="text-center text-sm">
+          Ai deja cont?{" "}
+          <Link href="/auth/login" className="text-primary hover:underline">
+            Autentifică-te
+          </Link>
+        </p>
+      </Card>
+    </div>
+  )
+}
