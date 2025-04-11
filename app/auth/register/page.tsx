@@ -23,7 +23,7 @@ export default function RegisterPage() {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    userType: "CLIENT" as "CLIENT" | "OWNER",
+    userRole: "CLIENT" as "CLIENT" | "OWNER",
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,7 +44,7 @@ export default function RegisterPage() {
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        userType: formData.userType,
+        userRole: formData.userRole,
       })
       toast({
         title: "Cont creat cu succes",
@@ -146,9 +146,9 @@ export default function RegisterPage() {
           <div className="space-y-2">
             <Label>Tip cont</Label>
             <Select
-              value={formData.userType}
+              value={formData.userRole}
               onValueChange={(value: "CLIENT" | "OWNER") =>
-                setFormData((prev) => ({ ...prev, userType: value }))
+                setFormData((prev) => ({ ...prev, userRole: value }))
               }
               disabled={isLoading}
             >

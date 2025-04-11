@@ -1,6 +1,9 @@
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const KEYCLOAK_URL = process.env.NEXT_PUBLIC_KEYCLOAK_URL || 'http://localhost:8080/realms/autoflex';
+const CLIENT_ID = 'autoflex-client';
 
 // Create axios instance
 const api = axios.create({
@@ -10,14 +13,97 @@ const api = axios.create({
   },
 });
 
+interface JwtPayload {
+  exp: number;
+}
+
+// Verifică dacă token-ul a expirat
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+    const currentTime = Date.now() / 1000;
+    return decoded.exp < currentTime;
+  } catch {
+    return true;
+  }
+};
+
+// Reînnoiește token-ul folosind refresh token direct la Keycloak
+const refreshAccessToken = async (): Promise<string> => {
+  try {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) throw new Error('No refresh token available');
+
+    const params = new URLSearchParams();
+    params.append('grant_type', 'refresh_token');
+    params.append('client_id', CLIENT_ID);
+    params.append('refresh_token', refreshToken);
+
+    const response = await axios.post(
+      `${KEYCLOAK_URL}/protocol/openid-connect/token`,
+      params,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+
+    const { access_token, refresh_token } = response.data;
+    localStorage.setItem('access_token', access_token);
+    localStorage.setItem('refresh_token', refresh_token);
+
+    return access_token;
+  } catch (error) {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    throw error;
+  }
+};
+
 // Add auth token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
+api.interceptors.request.use(async (config) => {
+  let token = localStorage.getItem('access_token');
+
+  if (token && isTokenExpired(token)) {
+    try {
+      token = await refreshAccessToken();
+    } catch (error) {
+      // Token refresh failed, redirect to login
+      window.location.href = '/auth/login';
+      return Promise.reject(error);
+    }
+  }
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
+// Handle 401 responses
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const token = await refreshAccessToken();
+        originalRequest.headers.Authorization = `Bearer ${token}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        // Redirect to login if refresh fails
+        window.location.href = '/auth/login';
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 // Auth
 export interface RegisterData {
@@ -25,7 +111,7 @@ export interface RegisterData {
   password: string;
   firstName: string;
   lastName: string;
-  userType: 'CLIENT' | 'OWNER';
+  userRole: 'CLIENT' | 'OWNER';
 }
 
 export interface LoginData {

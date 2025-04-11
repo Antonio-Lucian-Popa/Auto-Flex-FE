@@ -178,7 +178,11 @@ export default function CarsPage() {
               value={`${filters.sortBy}_${filters.direction}`}
               onValueChange={(value) => {
                 const [sortBy, direction] = value.split("_")
-                setFilters((prev) => ({ ...prev, sortBy, direction }))
+                setFilters((prev) => ({
+                  ...prev,
+                  sortBy: sortBy as "price" | "rating" | "year" | undefined,
+                  direction: direction as "asc" | "desc" | undefined,
+                }))
               }}
             >
               <SelectTrigger className="w-full sm:w-[180px]">
@@ -213,7 +217,7 @@ export default function CarsPage() {
                 <Card key={car.id} className="overflow-hidden group">
                   <div className="relative h-48">
                     <Image
-                      src={getImageUrl(car.id, car.images[0])}
+                      src={car.images[0]}
                       alt={car.name}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -266,14 +270,14 @@ export default function CarsPage() {
               <Button
                 variant="outline"
                 disabled={data.first}
-                onClick={() => handleFilterChange("page", filters.page - 1)}
+                onClick={() => handleFilterChange("page", (filters.page ?? 0) - 1)}
               >
                 Anterior
               </Button>
               <Button
                 variant="outline"
                 disabled={data.last}
-                onClick={() => handleFilterChange("page", filters.page + 1)}
+                onClick={() => handleFilterChange("page", (filters.page ?? 0) + 1)}
               >
                 Următor
               </Button>

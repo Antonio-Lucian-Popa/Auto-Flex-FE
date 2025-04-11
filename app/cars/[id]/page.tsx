@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import { getCarBookings, getCarById, getCarReviews, getImageUrl, createBooking } from "@/lib/api"
 import { Calendar as CalendarIcon, Car, Fuel, Gauge, MapPin, Star, Users } from "lucide-react"
 import Image from "next/image"
@@ -103,7 +103,7 @@ export default function CarDetailsPage({ params }: { params: { id: string } }) {
             <div className="col-span-2">
               <div className="relative h-[400px] rounded-lg overflow-hidden">
                 <Image
-                  src={getImageUrl(car.id, car.images[0])}
+                  src={car.images[0]}
                   alt={car.name}
                   fill
                   className="object-cover"
@@ -113,7 +113,7 @@ export default function CarDetailsPage({ params }: { params: { id: string } }) {
             {car.images.slice(1).map((image: string, index: number) => (
               <div key={index} className="relative h-[200px] rounded-lg overflow-hidden">
                 <Image
-                  src={getImageUrl(car.id, image)}
+                  src={image}
                   alt={`${car.name} ${index + 2}`}
                   fill
                   className="object-cover"

@@ -39,8 +39,8 @@ export default function ProfilePage() {
                 <Card key={booking.id} className="overflow-hidden">
                   <div className="relative h-48">
                     <Image
-                      src={booking.car.images[0]}
-                      alt={booking.car.name}
+                      src={booking.images[0]}
+                      alt={booking.brand}
                       fill
                       className="object-cover"
                     />
@@ -48,15 +48,15 @@ export default function ProfilePage() {
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="text-xl font-semibold">{booking.car.name}</h3>
+                        <h3 className="text-xl font-semibold">{booking.brand}</h3>
                         <p className="text-sm text-muted-foreground flex items-center mt-1">
                           <MapPin className="h-4 w-4 mr-1" />
-                          {booking.car.location}
+                          {booking.location}
                         </p>
                       </div>
                       <div className="flex items-center">
                         <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                        <span>{booking.car.rating}</span>
+                        <span>{booking.rating}</span>
                       </div>
                     </div>
                     <div className="space-y-2">
