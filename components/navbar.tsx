@@ -13,24 +13,28 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { logout } from "@/lib/api"
-
-import Image from "next/image"
+import { logout, checkAuth } from "@/lib/api"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 export function Navbar() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [isOpen, setIsOpen] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  const { data: isAuthenticated, refetch } = useQuery({
+    queryKey: ['auth'],
+    queryFn: checkAuth,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  })
 
   useEffect(() => {
-    // Verificăm dacă există un token de autentificare
-    const token = localStorage.getItem("access_token")
-    setIsAuthenticated(!!token)
-  }, [])
+    // Revalidate auth state when component mounts
+    refetch()
+  }, [refetch])
 
   const handleLogout = () => {
     logout()
-    setIsAuthenticated(false)
+    queryClient.setQueryData(['auth'], false)
     router.push("/")
   }
 
@@ -38,16 +42,8 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="mx-auto max-w-[1440px] flex h-16 items-center px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center space-x-2">
-        <div className="flex items-center gap-2">
-          <Image
-            src="/logo.png" // 🟢 imaginea din public/
-            alt="AutoFlex Logo"
-            width={40}
-            height={40}
-            className="rounded-md object-contain"
-          />
+          <Car className="h-6 w-6" />
           <span className="text-xl font-bold">AutoFlex</span>
-        </div>
         </Link>
 
         {/* Desktop Navigation */}

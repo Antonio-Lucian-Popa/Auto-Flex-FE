@@ -11,9 +11,11 @@ import { Car } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 
 export default function LoginPage() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { toast } = useToast()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -25,6 +27,7 @@ export default function LoginPage() {
 
     try {
       await login({ email, password })
+      queryClient.setQueryData(['auth'], true)
       toast({
         title: "Autentificare reușită",
         description: "Bine ai revenit!",

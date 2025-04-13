@@ -111,7 +111,7 @@ export interface RegisterData {
   password: string;
   firstName: string;
   lastName: string;
-  userRole: 'CLIENT' | 'OWNER';
+  userType: 'CLIENT' | 'OWNER';
 }
 
 export interface LoginData {
@@ -140,6 +140,11 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
 export const logout = () => {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
+};
+
+export const checkAuth = () => {
+  const token = localStorage.getItem('access_token');
+  return !!token && !isTokenExpired(token);
 };
 
 // Cars
