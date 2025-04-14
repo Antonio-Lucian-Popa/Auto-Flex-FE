@@ -71,7 +71,7 @@ api.interceptors.request.use(async (config) => {
       token = await refreshAccessToken();
     } catch (error) {
       // Token refresh failed, redirect to login
-      window.location.href = `${BASE_PATH}/auth/login`;
+      window.location.href = `/${BASE_PATH}/auth/login`;
       return Promise.reject(error);
     }
   }
@@ -97,7 +97,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         // Redirect to login if refresh fails
-        window.location.href = `${BASE_PATH}/auth/login`;
+        window.location.href = `/${BASE_PATH}/auth/login`;
         return Promise.reject(refreshError);
       }
     }
