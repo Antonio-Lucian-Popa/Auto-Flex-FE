@@ -77,7 +77,7 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="/offer">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button size="lg" variant="outline" className="bg-primary text-white hover:bg-primary/90 hover:text-white">
                 Oferă mașina ta
               </Button>
             </Link>

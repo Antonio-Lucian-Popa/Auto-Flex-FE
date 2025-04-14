@@ -21,21 +21,24 @@ export function Navbar() {
   const queryClient = useQueryClient()
   const [isOpen, setIsOpen] = useState(false)
 
-  const { data: isAuthenticated, refetch } = useQuery({
+  const { data: isAuthenticated, isLoading: isCheckingAuth } = useQuery({
     queryKey: ['auth'],
     queryFn: checkAuth,
     staleTime: 1000 * 60 * 5, // 5 minutes
   })
 
-  useEffect(() => {
-    // Revalidate auth state when component mounts
-    refetch()
-  }, [refetch])
-
   const handleLogout = () => {
     logout()
     queryClient.setQueryData(['auth'], false)
     router.push("/")
+  }
+
+  const handleAuthenticatedLink = (path: string) => {
+    if (!isAuthenticated) {
+      router.push("/auth/login")
+      return
+    }
+    router.push(path)
   }
 
   return (
@@ -52,9 +55,14 @@ export function Navbar() {
             <Link href="/cars" className="text-foreground/60 hover:text-foreground transition">
               Caută mașini
             </Link>
-            <Link href="/offer" className="text-foreground/60 hover:text-foreground transition">
-              Oferă mașina ta
-            </Link>
+            {isAuthenticated && (
+              <button
+                onClick={() => handleAuthenticatedLink("/offer")}
+                className="text-foreground/60 hover:text-foreground transition"
+              >
+                Oferă mașina ta
+              </button>
+            )}
             <Link href="/how-it-works" className="text-foreground/60 hover:text-foreground transition">
               Cum funcționează
             </Link>
@@ -97,6 +105,7 @@ export function Navbar() {
               </>
             )}
           </div>
+
         </div>
 
         {/* Mobile Navigation */}
@@ -112,13 +121,25 @@ export function Navbar() {
                 <Link href="/cars" onClick={() => setIsOpen(false)}>
                   Caută mașini
                 </Link>
-                <Link href="/offer" onClick={() => setIsOpen(false)}>
-                  Oferă mașina ta
-                </Link>
+
+                {isAuthenticated && (
+                  <button
+                    onClick={() => {
+                      handleAuthenticatedLink("/offer")
+                      setIsOpen(false)
+                    }}
+                    className="text-left"
+                  >
+                    Oferă mașina ta
+                  </button>
+                )}
+
                 <Link href="/how-it-works" onClick={() => setIsOpen(false)}>
                   Cum funcționează
                 </Link>
+
                 <hr className="my-4" />
+
                 {isAuthenticated ? (
                   <>
                     <Link href="/profile" onClick={() => setIsOpen(false)}>
@@ -154,6 +175,7 @@ export function Navbar() {
                   </>
                 )}
               </div>
+
             </SheetContent>
           </Sheet>
         </div>

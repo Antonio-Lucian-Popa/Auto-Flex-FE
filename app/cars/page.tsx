@@ -5,10 +5,11 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
-import { CarFilters, getCars, getImageUrl } from "@/lib/api"
+import { CarFilters, getCars, getImageUrl, checkAuth } from "@/lib/api"
 import { Car, Filter, MapPin, Star } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
@@ -17,11 +18,18 @@ const transmissions = ["AUTOMATIC", "MANUAL"]
 const fuels = ["GASOLINE", "DIESEL", "ELECTRIC", "HYBRID"]
 
 export default function CarsPage() {
+  const router = useRouter()
   const [filters, setFilters] = useState<CarFilters>({
     page: 0,
     size: 9,
     minPrice: 0,
     maxPrice: 500,
+  })
+
+  const { data: isAuthenticated } = useQuery({
+    queryKey: ['auth'],
+    queryFn: checkAuth,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 
   const { data, isLoading, error } = useQuery({
@@ -39,6 +47,14 @@ export default function CarsPage() {
       minPrice: value[0],
       maxPrice: value[1],
     }))
+  }
+
+  const handleCarClick = (carId: string) => {
+    if (!isAuthenticated) {
+      router.push("/auth/login")
+      return
+    }
+    router.push(`/cars/${carId}`)
   }
 
   if (error) {
@@ -198,71 +214,59 @@ export default function CarsPage() {
           </div>
 
           {/* Cars Grid */}
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((n) => (
-                <Card key={n} className="animate-pulse">
-                  <div className="h-48 bg-gray-200" />
-                  <div className="p-4 space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
-                    <div className="h-4 bg-gray-200 rounded w-1/2" />
-                    <div className="h-4 bg-gray-200 rounded w-1/4" />
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {data?.content.map((car: any) => (
-                <Card key={car.id} className="overflow-hidden group">
-                  <div className="relative h-48">
-                    <Image
-                      src={car.images[0]}
-                      alt={car.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="text-lg font-semibold">{car.name}</h3>
-                        <p className="text-sm text-muted-foreground flex items-center mt-1">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {car.location}
-                        </p>
-                      </div>
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                        <span className="font-medium">{car.rating}</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      <span className="text-xs bg-secondary px-2 py-1 rounded-full">
-                        {car.year}
-                      </span>
-                      <span className="text-xs bg-secondary px-2 py-1 rounded-full">
-                        {car.transmission === "AUTOMATIC" ? "Automată" : "Manuală"}
-                      </span>
-                      <span className="text-xs bg-secondary px-2 py-1 rounded-full">
-                        {car.fuelType === "GASOLINE" ? "Benzină" :
-                         car.fuelType === "DIESEL" ? "Diesel" :
-                         car.fuelType === "ELECTRIC" ? "Electric" : "Hybrid"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className="font-semibold text-lg">
-                        {car.price} RON<span className="text-sm text-muted-foreground">/zi</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data?.content.map((car: any) => (
+              <Card key={car.id} className="overflow-hidden group">
+                <div className="relative h-48">
+                  <Image
+                    src={getImageUrl(car.id, car.images[0])}
+                    alt={car.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-4">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="text-lg font-semibold">{car.name}</h3>
+                      <p className="text-sm text-muted-foreground flex items-center mt-1">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {car.location}
                       </p>
-                      <Link href={`/cars/${car.id}`}>
-                        <Button variant="secondary">Vezi detalii</Button>
-                      </Link>
+                    </div>
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                      <span className="font-medium">{car.rating}</span>
                     </div>
                   </div>
-                </Card>
-              ))}
-            </div>
-          )}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <span className="text-xs bg-secondary px-2 py-1 rounded-full">
+                      {car.year}
+                    </span>
+                    <span className="text-xs bg-secondary px-2 py-1 rounded-full">
+                      {car.transmission === "AUTOMATIC" ? "Automată" : "Manuală"}
+                    </span>
+                    <span className="text-xs bg-secondary px-2 py-1 rounded-full">
+                      {car.fuelType === "GASOLINE" ? "Benzină" :
+                       car.fuelType === "DIESEL" ? "Diesel" :
+                       car.fuelType === "ELECTRIC" ? "Electric" : "Hybrid"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p className="font-semibold text-lg">
+                      {car.price} RON<span className="text-sm text-muted-foreground">/zi</span>
+                    </p>
+                    <Button
+                      variant="secondary"
+                      onClick={() => handleCarClick(car.id)}
+                    >
+                      Vezi detalii
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
 
           {/* Pagination */}
           {data && (
