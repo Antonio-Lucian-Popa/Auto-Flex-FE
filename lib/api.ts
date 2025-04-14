@@ -111,7 +111,7 @@ export interface RegisterData {
   password: string;
   firstName: string;
   lastName: string;
-  userType: 'CLIENT' | 'OWNER';
+  userRole: 'CLIENT' | 'OWNER';
 }
 
 export interface LoginData {

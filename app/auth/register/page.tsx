@@ -17,13 +17,20 @@ export default function RegisterPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    email: string;
+    password: string;
+    confirmPassword: string;
+    firstName: string;
+    lastName: string;
+    userRole: "CLIENT" | "OWNER";
+  }>({
     email: "",
     password: "",
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    userRole: "CLIENT" as "CLIENT" | "OWNER",
+    userRole: "CLIENT",
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
