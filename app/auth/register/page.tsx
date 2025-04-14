@@ -13,6 +13,7 @@ import getConfig from "next/config"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { BASE_PATH } from "@/lib/constant"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -33,9 +34,6 @@ export default function RegisterPage() {
     lastName: "",
     userRole: "CLIENT",
   })
-
-  const { publicRuntimeConfig } = getConfig()
-  const basePath = publicRuntimeConfig.basePath || ''
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,7 +59,7 @@ export default function RegisterPage() {
         title: "Cont creat cu succes",
         description: "Te poți autentifica acum",
       })
-      router.push(`${basePath}/auth/login`)
+      router.push(`${BASE_PATH}/auth/login`)
     } catch (error: any) {
       toast({
         title: "Eroare",

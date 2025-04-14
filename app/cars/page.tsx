@@ -13,13 +13,12 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import getConfig from "next/config"
+import { BASE_PATH } from "@/lib/constant"
 
 const locations = ["București", "Cluj-Napoca", "Timișoara", "Iași", "Brașov", "Constanța"]
 const transmissions = ["AUTOMATIC", "MANUAL"]
 const fuels = ["GASOLINE", "DIESEL", "ELECTRIC", "HYBRID"]
 
-const { publicRuntimeConfig } = getConfig()
-const basePath = publicRuntimeConfig.basePath || ''
 
 
 export default function CarsPage() {
@@ -56,10 +55,10 @@ export default function CarsPage() {
 
   const handleCarClick = (carId: string) => {
     if (!isAuthenticated) {
-      router.push(`${basePath}/auth/login`)
+      router.push(`${BASE_PATH}/auth/login`)
       return
     }
-    router.push(`${basePath}/cars/${carId}`)
+    router.push(`${BASE_PATH}/cars/${carId}`)
   }
 
   if (error) {

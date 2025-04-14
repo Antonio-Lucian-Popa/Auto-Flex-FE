@@ -4,6 +4,12 @@ const nextConfig = {
   assetPrefix: '/autoflex-fe',
   trailingSlash: true,
   output: 'standalone',
+  publicRuntimeConfig: {
+    basePath: '/autoflex-fe',
+  },
+  env: {
+    NEXT_PUBLIC_BASE_PATH: '/autoflex-fe'
+  },  
   eslint: {
     ignoreDuringBuilds: true,
   },

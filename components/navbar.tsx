@@ -16,14 +16,12 @@ import { useRouter } from "next/navigation"
 import { logout, checkAuth } from "@/lib/api"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import getConfig from "next/config"
+import { BASE_PATH } from "@/lib/constant"
 
 export function Navbar() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const [isOpen, setIsOpen] = useState(false)
-
-  const { publicRuntimeConfig } = getConfig()
-  const basePath = publicRuntimeConfig.basePath || ''
 
   const { data: isAuthenticated, isLoading: isCheckingAuth } = useQuery({
     queryKey: ['auth'],
@@ -34,12 +32,12 @@ export function Navbar() {
   const handleLogout = () => {
     logout()
     queryClient.setQueryData(['auth'], false)
-    router.push(`${basePath}/`)
+    router.push(`${BASE_PATH}/`)
   }
 
   const handleAuthenticatedLink = (path: string) => {
     if (!isAuthenticated) {
-      router.push(`${basePath}/auth/login`)
+      router.push(`${BASE_PATH}/auth/login`)
       return
     }
     router.push(path)

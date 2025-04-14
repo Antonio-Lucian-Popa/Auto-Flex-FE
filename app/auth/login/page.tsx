@@ -12,7 +12,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import getConfig from "next/config"
+import { BASE_PATH } from "@/lib/constant"
+
 
 export default function LoginPage() {
   const router = useRouter()
@@ -22,8 +23,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  const { publicRuntimeConfig } = getConfig()
-  const basePath = publicRuntimeConfig.basePath || ''
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,7 +35,7 @@ export default function LoginPage() {
         title: "Autentificare reușită",
         description: "Bine ai revenit!",
       })
-      router.push(`${basePath}"/profile`)
+      router.push(`${BASE_PATH}"/profile`)
     } catch (error: any) {
       toast({
         title: "Eroare",
