@@ -53,6 +53,8 @@ export default function CarsPage() {
     }))
   }
 
+  console.log("Base path:", BASE_PATH)
+
   const handleCarClick = (carId: string) => {
     if (!isAuthenticated) {
       router.push(`${BASE_PATH}/auth/login`)

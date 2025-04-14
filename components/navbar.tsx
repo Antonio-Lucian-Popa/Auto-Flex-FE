@@ -15,7 +15,6 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { logout, checkAuth } from "@/lib/api"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import getConfig from "next/config"
 import { BASE_PATH } from "@/lib/constant"
 
 export function Navbar() {
@@ -40,7 +39,7 @@ export function Navbar() {
       router.push(`${BASE_PATH}/auth/login`)
       return
     }
-    router.push(path)
+    router.push(`${BASE_PATH}/${path}`)
   }
 
   return (

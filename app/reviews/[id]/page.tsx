@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { createReview } from "@/lib/api"
+import { BASE_PATH } from "@/lib/constant"
 import { Star } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -39,7 +40,7 @@ export default function AddReviewPage({ params }: { params: { id: string } }) {
         title: "Recenzie adăugată",
         description: "Îți mulțumim pentru feedback!",
       })
-      router.push(`/cars/${params.id}`)
+      router.push(`${BASE_PATH}/cars/${params.id}`)
     } catch (error: any) {
       toast({
         title: "Eroare",
