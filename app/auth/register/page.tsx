@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 import { register } from "@/lib/api"
 import { Car } from "lucide-react"
+import getConfig from "next/config"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -32,6 +33,9 @@ export default function RegisterPage() {
     lastName: "",
     userRole: "CLIENT",
   })
+
+  const { publicRuntimeConfig } = getConfig()
+  const basePath = publicRuntimeConfig.basePath || ''
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,7 +61,7 @@ export default function RegisterPage() {
         title: "Cont creat cu succes",
         description: "Te poți autentifica acum",
       })
-      router.push("/auth/login")
+      router.push(`${basePath}/auth/login`)
     } catch (error: any) {
       toast({
         title: "Eroare",
