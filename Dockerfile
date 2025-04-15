@@ -2,14 +2,23 @@
 FROM node:18-alpine AS builder
 
 WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm install
+
+# 👇 Copiem fișierele inclusiv .env.prod
 COPY . .
-RUN npm install && npm run build
+
+# 👇 Specificăm manual variabila dacă e nevoie
+ENV NEXT_PUBLIC_BASE_PATH=/autoflex-fe
+
+# 👇 Build cu variabile disponibile
+RUN npm run build
 
 # Phase 2: Run
 FROM node:18-alpine
 
 WORKDIR /app
-
 ENV NODE_ENV=production
 
 COPY --from=builder /app/public ./public
