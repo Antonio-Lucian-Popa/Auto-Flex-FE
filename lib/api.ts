@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { BASE_PATH } from './constant';
+import { getBasePath } from './basePath';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 const KEYCLOAK_URL = process.env.NEXT_PUBLIC_KEYCLOAK_URL || 'http://localhost:8080/realms/autoflex';
@@ -71,7 +72,7 @@ api.interceptors.request.use(async (config) => {
       token = await refreshAccessToken();
     } catch (error) {
       // Token refresh failed, redirect to login
-      window.location.href = `${process.env.NEXT_PUBLIC_BASE_PATH}/auth/login`;
+      window.location.href = `${getBasePath()}/auth/login`;
       return Promise.reject(error);
     }
   }
@@ -98,7 +99,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         // Redirect to login if refresh fails
-        window.location.href = `${process.env.NEXT_PUBLIC_BASE_PATH}/auth/login`;
+        window.location.href = `${getBasePath()}/auth/login`;
         return Promise.reject(refreshError);
       }
     }
