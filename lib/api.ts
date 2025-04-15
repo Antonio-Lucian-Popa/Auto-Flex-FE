@@ -3,9 +3,9 @@ import { jwtDecode } from 'jwt-decode';
 import { BASE_PATH } from './constant';
 import { getBasePath } from './basePath';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
-const KEYCLOAK_URL = process.env.NEXT_PUBLIC_KEYCLOAK_URL || 'http://localhost:8080/realms/autoflex';
-const CLIENT_ID = 'autoflex-client';
+const API_URL = 'http://antonio-dev.go.ro:8081/autoflex-api/api/v1';
+const KEYCLOAK_URL = 'http://antonio-dev.go.ro:8081/keycloak-app/realms/autoflex-realm';
+const CLIENT_ID = 'autoflex-backend';
 
 // Create axios instance
 const api = axios.create({
@@ -72,7 +72,7 @@ api.interceptors.request.use(async (config) => {
       token = await refreshAccessToken();
     } catch (error) {
       // Token refresh failed, redirect to login
-      window.location.href = `${getBasePath()}/auth/login`;
+      window.location.href = `/autoflex-fe/auth/login`;
       return Promise.reject(error);
     }
   }
@@ -99,7 +99,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         // Redirect to login if refresh fails
-        window.location.href = `${getBasePath()}/auth/login`;
+        window.location.href = `/autoflex-fe/auth/login`;
         return Promise.reject(refreshError);
       }
     }
