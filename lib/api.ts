@@ -2,6 +2,7 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { BASE_PATH } from './constant';
 import { getBasePath } from './basePath';
+import { redirectToLogin } from '@/utils/redirect';
 
 const API_URL = 'http://antonio-dev.go.ro:8081/autoflex-api/api/v1';
 const KEYCLOAK_URL = 'http://antonio-dev.go.ro:8081/keycloak-app/realms/autoflex-realm';
@@ -72,7 +73,7 @@ api.interceptors.request.use(async (config) => {
       token = await refreshAccessToken();
     } catch (error) {
       // Token refresh failed, redirect to login
-      window.location.href = `/autoflex-fe/auth/login`;
+      redirectToLogin();
       return Promise.reject(error);
     }
   }
@@ -88,7 +89,6 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    console.log('Error config:', originalRequest);
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -98,8 +98,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${token}`;
         return api(originalRequest);
       } catch (refreshError) {
-        // Redirect to login if refresh fails
-        window.location.href = `/autoflex-fe/auth/login`;
+        redirectToLogin();
         return Promise.reject(refreshError);
       }
     }
@@ -107,6 +106,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 // Auth
 export interface RegisterData {
