@@ -88,6 +88,7 @@ api.interceptors.request.use(async (config) => {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    console.log("Errp: ", error, error.config, error.response?.status);
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
