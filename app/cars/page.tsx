@@ -14,6 +14,7 @@ import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import getConfig from "next/config"
 import { BASE_PATH } from "@/lib/constant"
+import { useAuthRedirect } from "@/hooks/useAuthRedirect"
 
 const locations = ["București", "Cluj-Napoca", "Timișoara", "Iași", "Brașov", "Constanța"]
 const transmissions = ["AUTOMATIC", "MANUAL"]
@@ -22,6 +23,7 @@ const fuels = ["GASOLINE", "DIESEL", "ELECTRIC", "HYBRID"]
 
 
 export default function CarsPage() {
+  useAuthRedirect();
   const router = useRouter()
   const [filters, setFilters] = useState<CarFilters>({
     page: 0,

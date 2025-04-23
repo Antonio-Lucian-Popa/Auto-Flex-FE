@@ -1,0 +1,26 @@
+# Ignoră fișiere de sistem
+.DS_Store
+Thumbs.db
+
+# Ignoră Git
+.git
+.gitignore
+
+# Ignoră node_modules (instalăm deps în Docker)
+node_modules
+
+# Ignoră output-ul de build local
+.next
+
+# Ignoră loguri
+*.log
+
+# Ignoră fișiere de configurare IDE
+.vscode
+.idea
+
+# Alte fișiere inutile
+.env
+*.swp
+npm-debug.log
+yarn-error.log

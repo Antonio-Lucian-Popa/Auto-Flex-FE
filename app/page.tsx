@@ -6,6 +6,7 @@ import { Calendar, Car, MapPin, Shield, Star, Zap } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
+
 const featuredCars = [
   {
     id: 1,
